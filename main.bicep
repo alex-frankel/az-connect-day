@@ -38,3 +38,5 @@ resource rbac 'microsoft.authorization/roleAssignments@2020-04-01-preview' = {
     roleDefinitionId: contributorRole
   }
 }
+
+output siteId string = appService.outputs.websiteId
