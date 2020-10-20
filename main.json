@@ -11,7 +11,9 @@
     }
   },
   "functions": [],
-  "variables": {},
+  "variables": {
+    "subnetName": "subnet001"
+  },
   "resources": [
     {
       "type": "Microsoft.Network/virtualNetworks",
@@ -26,7 +28,7 @@
         },
         "subnets": [
           {
-            "name": "subnet001",
+            "name": "[variables('subnetName')]",
             "properties": {
               "addressPrefix": "10.0.0.0/24"
             }
@@ -60,7 +62,7 @@
             "value": "vnet001"
           },
           "subnetName": {
-            "value": "[reference(resourceId('Microsoft.Network/virtualNetworks', 'vnet001')).subnets[0].name]"
+            "value": "[variables('subnetName')]"
           }
         },
         "template": {

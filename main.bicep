@@ -1,36 +1,31 @@
-param location string = resourceGroup().location
-param password string {
+param acrPassword string {
   secure: true
 }
-
-resource vnet 'microsoft.network/virtualNetworks@2020-06-01' = {
-  name: 'vnet001'
-  location: location
-  properties: {
-    addressSpace: {
-      addressPrefixes: [
-        '10.0.0.0/16'
-      ]
-    }
-    subnets: [
-      {
-        name: 'subnet001'
-        properties: {
-          addressPrefix: '10.0.0.0/24'
-        } 
-      }
-    ]
-  }
+param sqlServerPassword string {
+  secure: true
 }
+param location string = resourceGroup().location
+param webAppName string = 'lfa'
 
-module vm './vm-linux.bicep' = {
-  name: 'vmDeploy'
+module appService './webapp.bicep' = {
+  name: 'lfadeploy'
   params: {
-    vmName: 'xwing'
-    adminUsername: 'luke'
-    authenticationType: 'password'
-    adminPasswordOrKey: password
-    virtualNetworkName: vnet.name
-    subnetName: vnet.properties.subnets[0].name
+    webAppName: webAppName
+    acrName: 'lawrencefarmsantiques'
+    dockerImageAndTag: 'lfa/frontend:latest'
+    dockerUsername: 'lfaAdmin'
+    dockerPassword: acrPassword
   }
 }
+
+module datatier './datatier.bicep' = {
+  name: 'datadeploy'
+  params: {
+    dbName: 'db'
+    serverName: 'lfa'
+    username: 'adminUser'
+    password: sqlServerPassword
+  }
+}
+
+output siteId string = appService.outputs.websiteId
